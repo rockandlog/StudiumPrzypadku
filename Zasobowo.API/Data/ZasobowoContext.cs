@@ -9,5 +9,8 @@ namespace Zasobowo.API.Data
         public ZasobowoContext(DbContextOptions<ZasobowoContext> options) : base(options) { }
 
         public DbSet<Device> Devices { get; set; }
+
+        public DbSet<User> Users { get; set; }
+
     }
 }
