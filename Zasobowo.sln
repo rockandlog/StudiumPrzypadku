@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zasobowo.Sync", "Zasobowo.Sync\Zasobowo.Sync.csproj", "{027CB39A-3950-46F7-9CBC-A836582AD6AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zasobowo.API", "Zasobowo.API\Zasobowo.API.csproj", "{94188897-17B9-4E98-A208-750A2FAF9518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zasobowo.Client", "Zasobowo.Client\Zasobowo.Client.csproj", "{196D5440-70B7-4BCD-ACD4-C3089CEE0A7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{027CB39A-3950-46F7-9CBC-A836582AD6AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{027CB39A-3950-46F7-9CBC-A836582AD6AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{027CB39A-3950-46F7-9CBC-A836582AD6AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94188897-17B9-4E98-A208-750A2FAF9518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94188897-17B9-4E98-A208-750A2FAF9518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94188897-17B9-4E98-A208-750A2FAF9518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94188897-17B9-4E98-A208-750A2FAF9518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{196D5440-70B7-4BCD-ACD4-C3089CEE0A7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{196D5440-70B7-4BCD-ACD4-C3089CEE0A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{196D5440-70B7-4BCD-ACD4-C3089CEE0A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{196D5440-70B7-4BCD-ACD4-C3089CEE0A7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
