@@ -1,52 +1,23 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
 using Zasobowo.API.Data;
+using Zasobowo.Sync;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Dodanie kontekstu bazy danych SQLite
+// Dodanie DbContext
 builder.Services.AddDbContext<ZasobowoContext>(options =>
     options.UseSqlite("Data Source=zasobowo.db"));
 
-// Kontrolery
+// Dodanie kontrolerów + Swagger + SignalR
 builder.Services.AddControllers();
-
-// Konfiguracja Swaggera z obs³ug¹ JWT
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new() { Title = "Zasobowo.API", Version = "v1" });
+builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "WprowadŸ token JWT w formacie: Bearer {twój_token}"
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
-
-// Konfiguracja JWT
+// Konfiguracja JWT (jeœli ju¿ masz rejestracjê/logowanie)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -56,27 +27,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidIssuer = "ZasobowoAPI",
+            ValidAudience = "ZasobowoClient",
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? ""))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
 var app = builder.Build();
 
-// Middleware
+// Developmentowe narzêdzia
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Middleware
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR - dodane w kroku 2
+app.MapHub<SyncHub>("/synchub");
 
 app.Run();
