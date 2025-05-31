@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using Zasobowo.Client.Models;
@@ -9,113 +8,70 @@ namespace Zasobowo.Client
 {
     public partial class MainWindow : Window
     {
-        private readonly DeviceServiceClient _deviceService = new();
-        private ObservableCollection<DeviceDto> _devices = new();
-        private List<UserDto> _users = new();
-        private HubConnection _hubConnection;
-        private DeviceDto? selectedDevice;
+        private readonly DeviceServiceClient _api = new();
+        private List<Device> _devices = new();
+        private Device? _selectedDevice;
 
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (_, _) =>
-            {
-                await InitializeHub();
-                LoadDevices();
-                LoadUsers();
-            };
-        }
-
-        private async Task InitializeHub()
-        {
-            _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7031/synchub")
-                .WithAutomaticReconnect()
-                .Build();
-
-            _hubConnection.On("DeviceUpdated", () =>
-            {
-                Dispatcher.Invoke(() => LoadDevices());
-            });
-
-            await _hubConnection.StartAsync();
+            LoadDevices();
         }
 
         private async void LoadDevices()
         {
-            var devices = await _deviceService.GetAllDevicesAsync();
-            _devices = new ObservableCollection<DeviceDto>(devices);
+            _devices = await _api.GetDevicesAsync();
             DeviceGrid.ItemsSource = _devices;
-        }
-
-        private async void LoadUsers()
-        {
-            _users = await _deviceService.GetAllUsersAsync();
-            UserComboBox.ItemsSource = _users;
         }
 
         private void DeviceGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selectedDevice = DeviceGrid.SelectedItem as DeviceDto;
-
-            if (selectedDevice != null)
+            if (DeviceGrid.SelectedItem is Device device)
             {
-                NameTextBox.Text = selectedDevice.Name;
-                TypeComboBox.Text = selectedDevice.Type;
-                StatusComboBox.Text = selectedDevice.Status;
-
-                if (selectedDevice.AssignedUserId != null)
-                    UserComboBox.SelectedValue = selectedDevice.AssignedUserId;
-                else
-                    UserComboBox.SelectedIndex = -1;
+                _selectedDevice = device;
+                IdBox.Text = device.Id.ToString();
+                NameBox.Text = device.Name;
+                StatusBox.Text = device.Status;
+                AssignedToBox.Text = device.AssignedTo;
+                TypeBox.Text = device.Type;
             }
         }
 
         private async void AddDevice_Click(object sender, RoutedEventArgs e)
         {
-            var device = new DeviceDto
+            var device = new Device
             {
-                Name = NameTextBox.Text.Trim(),
-                Type = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
-                Status = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
-                AssignedUserId = (int?)UserComboBox.SelectedValue
+                Name = NameBox.Text,
+                Status = StatusBox.Text,
+                AssignedTo = AssignedToBox.Text,
+                Type = TypeBox.Text
             };
 
-            var result = await _deviceService.CreateDeviceAsync(device);
-            StatusTextBlock.Text = result;
+            await _api.AddDeviceAsync(device);
+            LoadDevices();
+            ClearForm();
         }
 
         private async void UpdateDevice_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedDevice == null)
-            {
-                StatusTextBlock.Text = "Najpierw wybierz urządzenie do aktualizacji.";
-                return;
-            }
+            if (_selectedDevice == null) return;
 
-            var updatedDevice = new DeviceDto
-            {
-                Id = selectedDevice.Id,
-                Name = NameTextBox.Text.Trim(),
-                Type = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
-                Status = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
-                AssignedUserId = (int?)UserComboBox.SelectedValue
-            };
+            _selectedDevice.Name = NameBox.Text;
+            _selectedDevice.Status = StatusBox.Text;
+            _selectedDevice.AssignedTo = AssignedToBox.Text;
+            _selectedDevice.Type = TypeBox.Text;
 
-            var result = await _deviceService.UpdateDeviceAsync(updatedDevice.Id, updatedDevice);
-            StatusTextBlock.Text = result;
+            await _api.AddDeviceAsync(_selectedDevice);
+            LoadDevices();
+            ClearForm();
         }
 
         private async void DeleteDevice_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedDevice == null)
-            {
-                StatusTextBlock.Text = "Najpierw wybierz urządzenie do usunięcia.";
-                return;
-            }
+            if (_selectedDevice == null) return;
 
-            var result = await _deviceService.DeleteDeviceAsync(selectedDevice.Id);
-            StatusTextBlock.Text = result;
+            await _api.DeleteDeviceAsync(_selectedDevice.Id);
+            LoadDevices();
             ClearForm();
         }
 
@@ -126,11 +82,13 @@ namespace Zasobowo.Client
 
         private void ClearForm()
         {
-            selectedDevice = null;
-            NameTextBox.Text = "";
-            TypeComboBox.SelectedIndex = -1;
-            StatusComboBox.SelectedIndex = -1;
-            UserComboBox.SelectedIndex = -1;
+            IdBox.Text = "";
+            NameBox.Text = "";
+            StatusBox.Text = "";
+            AssignedToBox.Text = "";
+            TypeBox.Text = "";
+            _selectedDevice = null;
+            DeviceGrid.SelectedItem = null;
         }
     }
 }

@@ -11,8 +11,8 @@ using Zasobowo.API.Data;
 namespace Zasobowo.API.Migrations
 {
     [DbContext(typeof(ZasobowoContext))]
-    [Migration("20250531115604_AnotherMigration")]
-    partial class AnotherMigration
+    [Migration("20250531125147_ABC")]
+    partial class ABC
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -23,12 +23,23 @@ namespace Zasobowo.API.Controllers
             return await _context.Devices.ToListAsync();
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Device>> GetDevice(int id)
+        {
+            var device = await _context.Devices.FindAsync(id);
+            if (device == null)
+                return NotFound();
+
+            return device;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Device>> AddDevice(Device device)
         {
             _context.Devices.Add(device);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetDevices), new { id = device.Id }, device);
+
+            return CreatedAtAction(nameof(GetDevice), new { id = device.Id }, device);
         }
 
         [HttpPut("{id}")]

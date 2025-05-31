@@ -1,4 +1,7 @@
-﻿namespace Zasobowo.API.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Zasobowo.API.Models
 {
     public class Device
     {
