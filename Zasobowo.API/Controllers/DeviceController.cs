@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zasobowo.API.Data;
 using Zasobowo.API.Models;
+using System.Linq;
 
 namespace Zasobowo.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DeviceController : ControllerBase
@@ -19,70 +18,69 @@ namespace Zasobowo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
+        public IActionResult GetAll()
         {
-            return await _context.Devices.ToListAsync();
-        }
+            var devices = _context.Devices
+                .Include(d => d.AssignedUser) // <-- to było brakujące
+                .ToList();
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Device>> GetDevice(int id)
-        {
-            var device = await _context.Devices.FindAsync(id);
-
-            if (device == null)
-                return NotFound();
-
-            return device;
+            return Ok(devices);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Device>> CreateDevice(Device device)
+        public IActionResult Create([FromBody] Device device)
         {
-            _context.Devices.Add(device);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return CreatedAtAction(nameof(GetDevice), new { id = device.Id }, device);
+            if (_context.Devices.Any(d => d.Name == device.Name))
+                return Conflict(new { message = "Urządzenie o takiej nazwie już istnieje." });
+
+            if (device.Status == "Przydzielony" && device.AssignedUserId == null)
+                return BadRequest(new { message = "Przydzielone urządzenie musi mieć przypisanego użytkownika." });
+
+            _context.Devices.Add(device);
+            _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDevice(int id, Device updatedDevice)
+        public IActionResult Update(int id, [FromBody] Device device)
         {
-            if (id != updatedDevice.Id)
-                return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _context.Entry(updatedDevice).State = EntityState.Modified;
+            var existing = _context.Devices.FirstOrDefault(d => d.Id == id);
+            if (existing == null)
+                return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeviceExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+            if (_context.Devices.Any(d => d.Id != id && d.Name == device.Name))
+                return Conflict(new { message = "Inne urządzenie o tej nazwie już istnieje." });
 
-            return NoContent();
+            if (device.Status == "Przydzielony" && device.AssignedUserId == null)
+                return BadRequest(new { message = "Przydzielone urządzenie musi mieć przypisanego użytkownika." });
+
+            existing.Name = device.Name;
+            existing.Type = device.Type;
+            existing.Status = device.Status;
+            existing.AssignedUserId = device.AssignedUserId;
+
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDevice(int id)
+        public IActionResult Delete(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
+            var device = _context.Devices.FirstOrDefault(d => d.Id == id);
             if (device == null)
                 return NotFound();
 
             _context.Devices.Remove(device);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            return NoContent();
-        }
-
-        private bool DeviceExists(int id)
-        {
-            return _context.Devices.Any(d => d.Id == id);
+            return Ok();
         }
     }
 }
