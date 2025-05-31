@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Zasobowo.API.Data;
 using Zasobowo.API.Models;
-using Microsoft.EntityFrameworkCore;
+using Zasobowo.API.Models.Auth;
 
 namespace Zasobowo.API.Controllers
 {
@@ -22,52 +23,73 @@ namespace Zasobowo.API.Controllers
             _configuration = configuration;
         }
 
+        // POST: /api/auth/register
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserDto request)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
-            if (await _context.Users.AnyAsync(u => u.Username == request.Username))
-                return BadRequest("Użytkownik już istnieje.");
-
-            var user = new User
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
             {
-                Username = request.Username,
+                return Conflict("Użytkownik o podanym adresie e-mail już istnieje.");
+            }
+
+            var newUser = new User
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Username = request.Email.Split('@')[0],
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Role = "User"
+                Role = request.Role
             };
 
-            _context.Users.Add(user);
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-            return Ok("Rejestracja zakończona.");
+
+            return Ok("Rejestracja zakończona sukcesem.");
         }
 
+        // POST: /api/auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserDto request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-                return Unauthorized("Nieprawidłowy login lub hasło.");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+            {
+                return Unauthorized("Nieprawidłowy email lub hasło.");
+            }
+
+            bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+            if (!passwordValid)
+            {
+                return Unauthorized("Nieprawidłowy email lub hasło.");
+            }
 
             var token = GenerateJwtToken(user);
-            return Ok(new { token });
+            return Ok(new TokenResponse
+            {
+                Token = token,
+                Email = user.Email,
+                Role = user.Role
+            });
         }
 
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"] ?? "tajny_klucz_do_tokena_123"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds
             );
 
