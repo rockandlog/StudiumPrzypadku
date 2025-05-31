@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zasobowo.API.Data;
 
@@ -10,9 +11,11 @@ using Zasobowo.API.Data;
 namespace Zasobowo.API.Migrations
 {
     [DbContext(typeof(ZasobowoContext))]
-    partial class ZasobowoContextModelSnapshot : ModelSnapshot
+    [Migration("20250531125147_ABC")]
+    partial class ABC
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
@@ -23,13 +26,8 @@ namespace Zasobowo.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-<<<<<<< HEAD
-                    b.Property<int?>("AssignedUserId")
-                        .HasColumnType("INTEGER");
-=======
                     b.Property<string>("AssignedTo")
                         .HasColumnType("TEXT");
->>>>>>> develop
 
                     b.Property<int?>("AssignedUserId")
                         .HasColumnType("INTEGER");
@@ -59,18 +57,6 @@ namespace Zasobowo.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -91,12 +77,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 1,
-<<<<<<< HEAD
-                            Email = "ola@bitpol.pl",
-                            FirstName = "Ola",
-                            LastName = "Jaskólska",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "ola.dev"
@@ -104,12 +84,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 2,
-<<<<<<< HEAD
-                            Email = "kamil@bitpol.pl",
-                            FirstName = "Kamil",
-                            LastName = "Sys",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "kamil.sys"
@@ -117,12 +91,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 3,
-<<<<<<< HEAD
-                            Email = "ania@bitpol.pl",
-                            FirstName = "Ania",
-                            LastName = "UI",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "ania.ui"
@@ -130,12 +98,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 4,
-<<<<<<< HEAD
-                            Email = "mario@bitpol.pl",
-                            FirstName = "Mario",
-                            LastName = "Q",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "mario.q"
@@ -143,12 +105,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 5,
-<<<<<<< HEAD
-                            Email = "ewelina@bitpol.pl",
-                            FirstName = "Ewelina",
-                            LastName = "PMO",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "ewelina.pmo"
@@ -156,12 +112,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 6,
-<<<<<<< HEAD
-                            Email = "dawid@bitpol.pl",
-                            FirstName = "Dawid",
-                            LastName = "Admin",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "Admin",
                             Username = "dawid.admin"
@@ -169,12 +119,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 7,
-<<<<<<< HEAD
-                            Email = "szymon@bitpol.pl",
-                            FirstName = "Szymon",
-                            LastName = "Fullstack",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "szymon.fullstack"
@@ -182,12 +126,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 8,
-<<<<<<< HEAD
-                            Email = "gosia@bitpol.pl",
-                            FirstName = "Gosia",
-                            LastName = "Testerka",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "gosia.test"
@@ -195,12 +133,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 9,
-<<<<<<< HEAD
-                            Email = "adam@bitpol.pl",
-                            FirstName = "Adam",
-                            LastName = "Security",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "Admin",
                             Username = "adam.secu"
@@ -208,12 +140,6 @@ namespace Zasobowo.API.Migrations
                         new
                         {
                             Id = 10,
-<<<<<<< HEAD
-                            Email = "karolina@bitpol.pl",
-                            FirstName = "Karolina",
-                            LastName = "UX",
-=======
->>>>>>> develop
                             PasswordHash = "1234",
                             Role = "User",
                             Username = "karolina.ux"

@@ -17,7 +17,10 @@ namespace Zasobowo.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+<<<<<<< HEAD
             // Relacja Device → User (AssignedUser)
+=======
+>>>>>>> develop
             modelBuilder.Entity<Device>()
                 .HasOne(d => d.AssignedUser)
                 .WithMany()
@@ -29,6 +32,7 @@ namespace Zasobowo.API.Data
             modelBuilder.Entity<Device>().Property(d => d.Status).IsRequired();
 
             modelBuilder.Entity<User>().Property(u => u.Username).IsRequired();
+<<<<<<< HEAD
             modelBuilder.Entity<User>().Property(u => u.Email).IsRequired(); // <--- Email dodany
             modelBuilder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
             modelBuilder.Entity<User>().Property(u => u.Role).IsRequired();
@@ -47,6 +51,23 @@ namespace Zasobowo.API.Data
      new User { Id = 10, Username = "karolina.ux", Email = "karolina@bitpol.pl", FirstName = "Karolina", LastName = "UX", PasswordHash = "1234", Role = "User" }
  );
 
+=======
+            modelBuilder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.Role).IsRequired();
+
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "ola.dev", PasswordHash = "1234", Role = "User" },
+                new User { Id = 2, Username = "kamil.sys", PasswordHash = "1234", Role = "User" },
+                new User { Id = 3, Username = "ania.ui", PasswordHash = "1234", Role = "User" },
+                new User { Id = 4, Username = "mario.q", PasswordHash = "1234", Role = "User" },
+                new User { Id = 5, Username = "ewelina.pmo", PasswordHash = "1234", Role = "User" },
+                new User { Id = 6, Username = "dawid.admin", PasswordHash = "1234", Role = "Admin" },
+                new User { Id = 7, Username = "szymon.fullstack", PasswordHash = "1234", Role = "User" },
+                new User { Id = 8, Username = "gosia.test", PasswordHash = "1234", Role = "User" },
+                new User { Id = 9, Username = "adam.secu", PasswordHash = "1234", Role = "Admin" },
+                new User { Id = 10, Username = "karolina.ux", PasswordHash = "1234", Role = "User" }
+            );
+>>>>>>> develop
         }
     }
 }

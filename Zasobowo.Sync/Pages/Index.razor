@@ -1,3 +1,46 @@
 ﻿@page "/"
+@using Zasobowo.Sync.Models
+@using Zasobowo.Sync.Services
+@inject SyncService SyncService
 
-<h1>Hello, world!</h1>
+<h3>Lista urządzeń (pobrana z API)</h3>
+
+@if (devices.Count == 0)
+{
+    <p>Brak urządzeń</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nazwa</th>
+                <th>Status</th>
+                <th>Przypisany do</th>
+                <th>Typ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in devices)
+            {
+                <tr>
+                    <td>@d.Id</td>
+                    <td>@d.Name</td>
+                    <td>@d.Status</td>
+                    <td>@d.AssignedTo</td>
+                    <td>@d.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<DeviceDto> devices = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        devices = await SyncService.GetDevicesAsync();
+    }
+}

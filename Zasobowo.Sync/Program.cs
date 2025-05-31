@@ -1,25 +1,19 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Zasobowo.Sync.Services;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+var builder = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((_, services) =>
+    {
+        services.AddLogging(config => config.AddConsole());
+        services.AddSingleton<RemoteSyncService>();
+        services.AddSingleton<SyncService>();
+    });
 
-var app = builder.Build();
+var host = builder.Build();
+var syncService = host.Services.GetRequiredService<SyncService>();
+await syncService.StartAsync();
 
-if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
-app.Run();
+Console.WriteLine("Naciœnij dowolny klawisz, aby zakoñczyæ...");
+Console.ReadKey();

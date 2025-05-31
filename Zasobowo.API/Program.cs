@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 using Zasobowo.API.Data;
 using Zasobowo.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 // Baza danych SQLite
 builder.Services.AddDbContext<ZasobowoContext>(options =>
     options.UseSqlite("Data Source=Zasobowo.db"));
@@ -42,6 +42,16 @@ builder.Services.AddSwaggerGen(c =>
         { jwtSecurityScheme, new string[] { } }
     });
 });
+=======
+// Dodaj kontekst bazy danych (SQLite)
+builder.Services.AddDbContext<ZasobowoContext>(options =>
+    options.UseSqlite("Data Source=Zasobowo.db"));
+
+// Dodaj kontrolery, Swaggera i inne usługi
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+>>>>>>> develop
 
 // JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -54,15 +64,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+<<<<<<< HEAD
             IssuerSigningKey = new SymmetricSecurityKey(key)
+=======
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("TwojSuperSekretnyKljucz123!")) // ← Upewnij się, że pasuje do kontrolera Auth
+>>>>>>> develop
         };
     });
 
 builder.Services.AddAuthorization();
 
+<<<<<<< HEAD
 // Serwisy aplikacyjne
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
+=======
+>>>>>>> develop
 var app = builder.Build();
 
 // Middleware
