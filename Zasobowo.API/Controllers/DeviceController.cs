@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zasobowo.API.Data;
 using Zasobowo.API.Models;
-using System.Linq;
 
 namespace Zasobowo.API.Controllers
 {
@@ -18,69 +18,56 @@ namespace Zasobowo.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
         {
-            var devices = _context.Devices
-                .Include(d => d.AssignedUser) // <-- to było brakujące
-                .ToList();
+            return await _context.Devices.ToListAsync();
+        }
 
-            return Ok(devices);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Device>> GetDevice(int id)
+        {
+            var device = await _context.Devices.FindAsync(id);
+            if (device == null)
+                return NotFound();
+
+            return device;
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Device device)
+        public async Task<ActionResult<Device>> AddDevice(Device device)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (_context.Devices.Any(d => d.Name == device.Name))
-                return Conflict(new { message = "Urządzenie o takiej nazwie już istnieje." });
-
-            if (device.Status == "Przydzielony" && device.AssignedUserId == null)
-                return BadRequest(new { message = "Przydzielone urządzenie musi mieć przypisanego użytkownika." });
-
             _context.Devices.Add(device);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return Ok();
+            return CreatedAtAction(nameof(GetDevice), new { id = device.Id }, device);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Device device)
+        public async Task<IActionResult> UpdateDevice(int id, Device device)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var existing = _context.Devices.FirstOrDefault(d => d.Id == id);
+            var existing = await _context.Devices.FindAsync(id);
             if (existing == null)
                 return NotFound();
 
-            if (_context.Devices.Any(d => d.Id != id && d.Name == device.Name))
-                return Conflict(new { message = "Inne urządzenie o tej nazwie już istnieje." });
-
-            if (device.Status == "Przydzielony" && device.AssignedUserId == null)
-                return BadRequest(new { message = "Przydzielone urządzenie musi mieć przypisanego użytkownika." });
-
             existing.Name = device.Name;
-            existing.Type = device.Type;
             existing.Status = device.Status;
-            existing.AssignedUserId = device.AssignedUserId;
+            existing.AssignedTo = device.AssignedTo;
+            existing.Type = device.Type;
 
-            _context.SaveChanges();
-            return Ok();
+            await _context.SaveChangesAsync();
+            return Ok(existing);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteDevice(int id)
         {
-            var device = _context.Devices.FirstOrDefault(d => d.Id == id);
+            var device = await _context.Devices.FindAsync(id);
             if (device == null)
                 return NotFound();
 
             _context.Devices.Remove(device);
-            _context.SaveChanges();
-
-            return Ok();
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

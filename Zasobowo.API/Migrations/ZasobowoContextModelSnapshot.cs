@@ -23,6 +23,9 @@ namespace Zasobowo.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("AssignedUserId")
                         .HasColumnType("INTEGER");
 

@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Zasobowo.API.Data;
-using System.Linq;
+using Zasobowo.API.Models;
 
 namespace Zasobowo.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         private readonly ZasobowoContext _context;

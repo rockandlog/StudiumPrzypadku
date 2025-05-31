@@ -1,56 +1,48 @@
+Ôªøusing Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Zasobowo.API.Data;
-using Zasobowo.Sync;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Zasobowo.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Dodanie DbContext
+// Dodaj kontekst bazy danych (SQLite)
 builder.Services.AddDbContext<ZasobowoContext>(options =>
-    options.UseSqlite("Data Source=zasobowo.db"));
+    options.UseSqlite("Data Source=Zasobowo.db"));
 
-// Dodanie kontrolerÛw + Swagger + SignalR
+// Dodaj kontrolery, Swaggera i inne us≈Çugi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
 
-// Konfiguracja JWT (jeúli juø masz rejestracjÍ/logowanie)
+// Konfiguracja JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "ZasobowoAPI",
-            ValidAudience = "ZasobowoClient",
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                Encoding.UTF8.GetBytes("TwojSuperSekretnyKljucz123!")) // ‚Üê Upewnij siƒô, ≈ºe pasuje do kontrolera Auth
         };
     });
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-// Developmentowe narzÍdzia
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 // Middleware
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// SignalR - dodane w kroku 2
-app.MapHub<SyncHub>("/synchub");
 
 app.Run();

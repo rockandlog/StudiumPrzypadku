@@ -1,6 +1,6 @@
-﻿namespace Zasobowo.Client.Models
+﻿namespace Zasobowo.Sync.Models
 {
-    public class Device
+    public class DeviceDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

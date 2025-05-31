@@ -11,8 +11,8 @@ using Zasobowo.API.Data;
 namespace Zasobowo.API.Migrations
 {
     [DbContext(typeof(ZasobowoContext))]
-    [Migration("20250531072427_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250531125147_ABC")]
+    partial class ABC
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,9 @@ namespace Zasobowo.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("AssignedUserId")
                         .HasColumnType("INTEGER");

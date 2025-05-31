@@ -7,7 +7,7 @@
 namespace Zasobowo.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class ABC : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,6 +36,7 @@ namespace Zasobowo.API.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
                     Status = table.Column<string>(type: "TEXT", nullable: false),
+                    AssignedTo = table.Column<string>(type: "TEXT", nullable: true),
                     AssignedUserId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
