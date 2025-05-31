@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zasobowo.API.Data;
 
@@ -10,9 +11,11 @@ using Zasobowo.API.Data;
 namespace Zasobowo.API.Migrations
 {
     [DbContext(typeof(ZasobowoContext))]
-    partial class ZasobowoContextModelSnapshot : ModelSnapshot
+    [Migration("20250531083713_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
@@ -22,9 +25,6 @@ namespace Zasobowo.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("AssignedTo")
-                        .HasColumnType("TEXT");
 
                     b.Property<int?>("AssignedUserId")
                         .HasColumnType("INTEGER");

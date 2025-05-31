@@ -6,6 +6,11 @@
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public string AssignedTo { get; set; } = string.Empty;
+
+        public string? AssignedTo { get; set; }
+
+
+        public int? AssignedUserId { get; set; }
+        public User? AssignedUser { get; set; }
     }
 }

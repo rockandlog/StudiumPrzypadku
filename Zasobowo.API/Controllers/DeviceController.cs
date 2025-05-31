@@ -6,7 +6,6 @@ using Zasobowo.API.Models;
 
 namespace Zasobowo.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DeviceController : ControllerBase
@@ -24,47 +23,28 @@ namespace Zasobowo.API.Controllers
             return await _context.Devices.ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Device>> GetDevice(int id)
-        {
-            var device = await _context.Devices.FindAsync(id);
-
-            if (device == null)
-                return NotFound();
-
-            return device;
-        }
-
         [HttpPost]
-        public async Task<ActionResult<Device>> CreateDevice(Device device)
+        public async Task<ActionResult<Device>> AddDevice(Device device)
         {
             _context.Devices.Add(device);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetDevice), new { id = device.Id }, device);
+            return CreatedAtAction(nameof(GetDevices), new { id = device.Id }, device);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDevice(int id, Device updatedDevice)
+        public async Task<IActionResult> UpdateDevice(int id, Device device)
         {
-            if (id != updatedDevice.Id)
-                return BadRequest();
+            var existing = await _context.Devices.FindAsync(id);
+            if (existing == null)
+                return NotFound();
 
-            _context.Entry(updatedDevice).State = EntityState.Modified;
+            existing.Name = device.Name;
+            existing.Status = device.Status;
+            existing.AssignedTo = device.AssignedTo;
+            existing.Type = device.Type;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeviceExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return NoContent();
+            await _context.SaveChangesAsync();
+            return Ok(existing);
         }
 
         [HttpDelete("{id}")]
@@ -76,13 +56,7 @@ namespace Zasobowo.API.Controllers
 
             _context.Devices.Remove(device);
             await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool DeviceExists(int id)
-        {
-            return _context.Devices.Any(d => d.Id == id);
         }
     }
 }
