@@ -17,6 +17,10 @@ namespace Zasobowo.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+<<<<<<< HEAD
+            // Relacja Device → User (AssignedUser)
+=======
+>>>>>>> develop
             modelBuilder.Entity<Device>()
                 .HasOne(d => d.AssignedUser)
                 .WithMany()
@@ -28,6 +32,26 @@ namespace Zasobowo.API.Data
             modelBuilder.Entity<Device>().Property(d => d.Status).IsRequired();
 
             modelBuilder.Entity<User>().Property(u => u.Username).IsRequired();
+<<<<<<< HEAD
+            modelBuilder.Entity<User>().Property(u => u.Email).IsRequired(); // <--- Email dodany
+            modelBuilder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.Role).IsRequired();
+
+            // Wstępne dane użytkowników (Email + Username)
+            modelBuilder.Entity<User>().HasData(
+     new User { Id = 1, Username = "ola.dev", Email = "ola@bitpol.pl", FirstName = "Ola", LastName = "Jaskólska", PasswordHash = "1234", Role = "User" },
+     new User { Id = 2, Username = "kamil.sys", Email = "kamil@bitpol.pl", FirstName = "Kamil", LastName = "Sys", PasswordHash = "1234", Role = "User" },
+     new User { Id = 3, Username = "ania.ui", Email = "ania@bitpol.pl", FirstName = "Ania", LastName = "UI", PasswordHash = "1234", Role = "User" },
+     new User { Id = 4, Username = "mario.q", Email = "mario@bitpol.pl", FirstName = "Mario", LastName = "Q", PasswordHash = "1234", Role = "User" },
+     new User { Id = 5, Username = "ewelina.pmo", Email = "ewelina@bitpol.pl", FirstName = "Ewelina", LastName = "PMO", PasswordHash = "1234", Role = "User" },
+     new User { Id = 6, Username = "dawid.admin", Email = "dawid@bitpol.pl", FirstName = "Dawid", LastName = "Admin", PasswordHash = "1234", Role = "Admin" },
+     new User { Id = 7, Username = "szymon.fullstack", Email = "szymon@bitpol.pl", FirstName = "Szymon", LastName = "Fullstack", PasswordHash = "1234", Role = "User" },
+     new User { Id = 8, Username = "gosia.test", Email = "gosia@bitpol.pl", FirstName = "Gosia", LastName = "Testerka", PasswordHash = "1234", Role = "User" },
+     new User { Id = 9, Username = "adam.secu", Email = "adam@bitpol.pl", FirstName = "Adam", LastName = "Security", PasswordHash = "1234", Role = "Admin" },
+     new User { Id = 10, Username = "karolina.ux", Email = "karolina@bitpol.pl", FirstName = "Karolina", LastName = "UX", PasswordHash = "1234", Role = "User" }
+ );
+
+=======
             modelBuilder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
             modelBuilder.Entity<User>().Property(u => u.Role).IsRequired();
 
@@ -43,6 +67,7 @@ namespace Zasobowo.API.Data
                 new User { Id = 9, Username = "adam.secu", PasswordHash = "1234", Role = "Admin" },
                 new User { Id = 10, Username = "karolina.ux", PasswordHash = "1234", Role = "User" }
             );
+>>>>>>> develop
         }
     }
 }

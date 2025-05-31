@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zasobowo.API.Data;
 using Zasobowo.API.Models;
+using Zasobowo.API.Models.Dtos;
 
 namespace Zasobowo.API.Controllers
 {
@@ -18,11 +18,24 @@ namespace Zasobowo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
+        public async Task<ActionResult<IEnumerable<DeviceDto>>> GetDevices()
         {
-            return await _context.Devices.ToListAsync();
-        }
+            var devices = await _context.Devices
+                .Include(d => d.AssignedUser)
+                .ToListAsync();
 
+<<<<<<< HEAD
+            var result = devices.Select(d => new DeviceDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Type = d.Type,
+                Status = d.Status,
+                AssignedTo = d.AssignedUser?.Username
+            });
+
+            return Ok(result);
+=======
         [HttpGet("{id}")]
         public async Task<ActionResult<Device>> GetDevice(int id)
         {
@@ -68,6 +81,7 @@ namespace Zasobowo.API.Controllers
             _context.Devices.Remove(device);
             await _context.SaveChangesAsync();
             return NoContent();
+>>>>>>> develop
         }
     }
 }
